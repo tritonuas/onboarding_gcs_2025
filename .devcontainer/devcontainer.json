@@ -1,0 +1,30 @@
+{
+    "name": "GCS Onboarding",
+
+    // Point to our Docker Compose file
+    "dockerComposeFile": "docker-compose.yml",
+
+    // Specify the service within the compose file that VS Code should attach to
+    "service": "gcs-dev",
+
+    // Set the workspace folder inside the container. This is the corrected path.
+    "workspaceFolder": "/workspaces",
+
+    // Automatically install these extensions inside the container for a better dev experience
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.go",
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint",
+                "zxh404.vscode-proto3"
+            ]
+        }
+    },
+
+    // Forward the ports we defined in docker-compose so VS Code can create links to them.
+    "forwardPorts": [5173, 8080],
+
+    // Tell VS Code to use the user defined in the Dockerfile ('vscode')
+    "remoteUser": "vscode"
+}

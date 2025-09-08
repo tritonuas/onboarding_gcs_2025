@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # This is the name of our single, unified development service
+  gcs-dev:
+    # Build the container using the Dockerfile in the current directory (.)
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Mount the entire project folder (one level up from .devcontainer)
+    # into the /workspaces directory inside the container.
+    volumes:
+      - ..:/workspaces:cached
+
+    # Map ports from the container to our local machine for browser access.
+    # Format is HOST:CONTAINER
+    ports:
+      - "5173:5173" # Vite (React) frontend dev server
+      - "8080:8080" # Go backend server
+
+    # Keep the container running in the background. We will execute commands
+    # manually from the VS Code terminal.
+    command: sleep infinity

@@ -6,13 +6,11 @@ import (
 	"net/http"
 )
 
-// Client is a client for interacting with the OBC's HTTP API.
 type Client struct {
 	httpClient *http.Client
 	urlBase    string
 }
 
-// NewClient creates a new OBC client.
 func NewClient(obcAddr string) *Client {
 	return &Client{
 		httpClient: &http.Client{},

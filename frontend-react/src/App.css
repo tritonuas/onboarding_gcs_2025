@@ -1,0 +1,22 @@
+body {
+  font-family: sans-serif;
+  margin: 2em;
+}
+
+.display-box {
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin-top: 1em;
+  min-height: 150px;
+  background-color: #f9f9f9;
+  font-family: monospace; 
+}
+
+.display-box pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.error-text {
+  color: #d8000c;
+}

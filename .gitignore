@@ -1,0 +1,12 @@
+/backend-go/gcs-onboarding
+/backend-go/internal/protos/
+/frontend-react/src/protos/
+
+npm-debug.log*
+yarn-error.log
+
+/frontend-react/dist
+
+.vscode/
+.DS_Store
+Thumbs.db

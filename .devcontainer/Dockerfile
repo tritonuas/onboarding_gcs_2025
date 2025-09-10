@@ -20,4 +20,7 @@ RUN curl -sLo /tmp/protoc.zip "https://github.com/protocolbuffers/protobuf/relea
     && rm /tmp/protoc.zip
 
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
+RUN chown -R vscode:vscode /go
+
 USER vscode

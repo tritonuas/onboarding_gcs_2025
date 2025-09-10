@@ -2,18 +2,15 @@ version: '3.8'
 
 services:
   gcs-dev:
-    # Build container 
     build:
       context: .
       dockerfile: Dockerfile
 
-    # Mount the entire project folder 
     volumes:
       - ..:/workspaces:cached
 
-    # Map ports from the container to our local machine (HOST:CONTAINER)
     ports:
-      - "5173:5173" # Vite (React) frontend dev server
+      - "5173:5173" # React frotend server
       - "8080:8080" # Go backend server
 
     command: sleep infinity

@@ -1,65 +1,66 @@
-import { useState } from 'react';
-import { OBCStatus } from './protos/onboarding.pb';
+import { useState } from "react";
+import HomePage from "./pages/HomePage";
+import StatusPage from "./pages/StatusPage";
+import PlaygroundPage from "./pages/PlaygroundPage";
+import "./tabs.css";
+
+type TabKey = "home" | "status" | "playground";
 
 function App() {
-  const [status, setStatus] = useState<OBCStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<TabKey>("home");
 
-  const fetchStatus = () => {
-    setIsLoading(true);
-    setError(null);
-    setStatus(null);
+    const renderActivePage = () => {
+        if (activeTab === "home") return <HomePage />;
+        if (activeTab === "status") return <StatusPage />;
+        if (activeTab === "playground") return <PlaygroundPage />;
+        return null;
+    };
 
-    fetch('/api/v1/obc/status')
-      .then(async (response) => {
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error || `HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setStatus(OBCStatus.fromJSON(data));
-      })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+    return (
+        <div className="tabs-container" style={{ fontFamily: "sans-serif" }}>
+            <div
+                style={{ padding: "16px 20px", borderBottom: "1px solid #eee" }}
+            >
+                <h1 style={{ margin: 0 }}>GCS Onboarding Tutorial</h1>
+            </div>
 
-  return (
-    <div style={{ fontFamily: 'sans-serif', padding: '20px' }}>
-      <h1>GCS Onboarding Tutorial</h1>
-      <button onClick={fetchStatus} disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'Get OBC Status'}
-      </button>
+            <nav className="tabs-header" role="tablist" aria-label="Main tabs">
+                {/* Tab buttons */}
+                <button
+                    className={`tab-button${
+                        activeTab === "home" ? " active" : ""
+                    }`}
+                    role="tab"
+                    aria-selected={activeTab === "home"}
+                    onClick={() => setActiveTab("home")}
+                >
+                    Home
+                </button>
+                <button
+                    className={`tab-button${
+                        activeTab === "status" ? " active" : ""
+                    }`}
+                    role="tab"
+                    aria-selected={activeTab === "status"}
+                    onClick={() => setActiveTab("status")}
+                >
+                    OBC Status
+                </button>
+                <button
+                    className={`tab-button${
+                        activeTab === "playground" ? " active" : ""
+                    }`}
+                    role="tab"
+                    aria-selected={activeTab === "playground"}
+                    onClick={() => setActiveTab("playground")}
+                >
+                    Playground
+                </button>
+            </nav>
 
-      <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc', minHeight: '100px' }}>
-        <h2>Response from OBC:</h2>
-        {isLoading && <p>Fetching status from OBC via Go proxy...</p>}
-        
-        {error && (
-          <div style={{ color: 'red' }}>
-            <h3>Error:</h3>
-            <pre>{error}</pre>
-            <p>Is the C++ OBCpp server running on port 5010?</p>
-          </div>
-        )}
-
-        {status && (
-          <div style={{ color: 'green' }}>
-            <h3>Success!</h3>
-            <pre>{JSON.stringify(status, null, 2)}</pre>
-          </div>
-        )}
-        
-        {!isLoading && !error && !status && <p>Click the button to fetch the OBC status.</p>}
-      </div>
-    </div>
-  );
+            <main className="tabs-main">{renderActivePage()}</main>
+        </div>
+    );
 }
 
 export default App;

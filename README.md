@@ -32,3 +32,4 @@ Most operations including building and running the project is done through the `
 1. `make protos` - Initalizes the project (Ran Once or when `make clean` is ran)
 2. `make clean` - Clears temp/build files
 3. `make run-dev` - runs frontend React server + backend go server
+- The frontend should open on [(`http://localhost:5173/`)](http://localhost:5173/)

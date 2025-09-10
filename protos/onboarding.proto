@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "gcs-onboarding/internal/protos";
+
+message OBCStatus {
+  string current_tick_name = 1;
+  bool is_connected = 2;
+  double mission_progress_percent = 3;
+}

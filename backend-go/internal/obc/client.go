@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"log"
 )
 
 type Client struct {
@@ -28,6 +29,8 @@ func (c *Client) GetStatus() ([]byte, int) {
 	resp, err := c.httpClient.Get(requestURL)
 	if err != nil {
 		// If there's a network error, we can't connect.
+		log.Printf("FATAL: OBC client request failed with network error: %v", err)
+
 		return nil, http.StatusBadGateway
 	}
 	defer resp.Body.Close()

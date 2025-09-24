@@ -15,6 +15,7 @@ all: protos
 run-dev: $(GO_SUM_FILE) $(GO_PROTO_FILE) $(TS_PROTO_FILE)
 	@echo "Starting Go backend (port 8080) and React frontend (port 5173)..."
 	@echo "Use the VS Code 'Ports' tab or pop-up to open the application in your browser."
+	@trap 'echo "Stopping server on port 8080..."; kill $$(lsof -t -i:8080) 2>/dev/null || true' EXIT; \
 	(cd backend-go && CGO_ENABLED=0 go run main.go) & \
 	(cd frontend-react && npm run dev -- --host)
 

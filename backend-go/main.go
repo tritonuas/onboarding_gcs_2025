@@ -6,7 +6,7 @@ import (
 	"gcs-onboarding/internal/server"
 )
 
-const obcAddress = "localhost:5010"
+const obcAddress = "host.docker.internal:5010"
 const serverPort = ":8080"
 
 func main() {

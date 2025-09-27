@@ -45,3 +45,31 @@ func (c *Client) GetStatus() ([]byte, int) {
 	// Return the body and the status code from the OBC's response
 	return body, resp.StatusCode
 }
+
+
+// GetTick retrieves the current tick from the OBC's /tick endpoint.
+// It returns the response body and the HTTP status code.
+func (c *Client) GetTick() ([]byte, int) {
+	// Construct the full URL for the request
+	requestURL := fmt.Sprintf("%s/tick", c.urlBase)
+
+	// Perform the GET request
+    resp, err := c.httpClient.Get(requestURL)
+	if err != nil {
+		// If there's a network error, we can't connect.
+		log.Printf("FATAL: OBC client request failed with network error: %v", err)
+
+        return nil, http.StatusBadGateway
+	}
+	defer resp.Body.Close()
+
+	// Read the response body from the OBC
+    body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		// If we can't read the body, it's an internal server error.
+        return nil, http.StatusInternalServerError
+	}
+
+	// Return the body and the status code from the OBC's response
+    return body, resp.StatusCode
+}

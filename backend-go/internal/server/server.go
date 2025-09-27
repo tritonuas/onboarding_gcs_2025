@@ -29,6 +29,7 @@ func (s *Server) setupRouter() {
 	api := router.Group("/api/v1")
 	{
 		api.GET("/obc/status", s.getOBCStatus())
+        api.GET("/obc/tick", s.getOBCTick())
 	}
 
 	s.router = router
@@ -56,6 +57,23 @@ func (s *Server) getOBCStatus() gin.HandlerFunc {
 
 		c.Data(http.StatusOK, "application/json", body)
 	}
+}
+
+// handler for /api/v1/obc/tick
+func (s *Server) getOBCTick() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        log.Println("Handler invoked: Proxying tick request to OBC.")
+
+        body, statusCode := s.obcClient.GetTick()
+
+        if statusCode != http.StatusOK {
+            log.Printf("Error from OBC client tick. Status: %d", statusCode)
+            c.JSON(statusCode, gin.H{"error": "Failed to get tick from OBC."})
+            return
+        }
+
+        c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
+    }
 }
 
 func CORSMiddleware() gin.HandlerFunc {

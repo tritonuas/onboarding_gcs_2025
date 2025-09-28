@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"gcs-onboarding/internal/obc"
+	"gcs-onboarding/internal/protos"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,6 +31,7 @@ func (s *Server) setupRouter() {
 	api := router.Group("/api/v1")
 	{
 		api.GET("/obc/status", s.getOBCStatus())
+		api.POST("/obc/message", s.postMessage())
 	}
 
 	s.router = router
@@ -55,6 +58,21 @@ func (s *Server) getOBCStatus() gin.HandlerFunc {
 		}
 
 		c.Data(http.StatusOK, "application/json", body)
+	}
+}
+
+// handler for /api/v1/obc/message
+func (s *Server) postMessage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var detectedObject protos.DetectedObject
+		err := c.BindJSON(&detectedObject)
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		respBody, status := s.obcClient.PostMessage(&detectedObject)
+		c.Data(status, "text/plain", respBody)
 	}
 }
 

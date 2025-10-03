@@ -5,6 +5,9 @@ const StatusPage = () => {
     const [status, setStatus] = useState<OBCStatus | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [tick, setTick] = useState<string | null>(null);
+    const [tickError, setTickError] = useState<string | null>(null);
+    const [isTickLoading, setIsTickLoading] = useState<boolean>(false);
 
     const fetchStatus = () => {
         setIsLoading(true);
@@ -33,12 +36,55 @@ const StatusPage = () => {
             });
     };
 
+    const fetchTick = () => {
+        setIsTickLoading(true);
+        setTickError(null);
+        setTick(null);
+
+        fetch("/api/v1/obc/tick")
+            .then(async (response) => {
+                if (!response.ok) {
+                    // try parse JSON error from proxy, else use status text
+                    try {
+                        const errData = await response.json();
+                        throw new Error(
+                            errData.error ||
+                                `HTTP error! Status: ${response.status}`
+                        );
+                    } catch (_) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                }
+                return response.text();
+            })
+            .then((text) => {
+                setTick(text);
+            })
+            .catch((err) => {
+                setTickError(err.message);
+            })
+            .finally(() => {
+                setIsTickLoading(false);
+            });
+    };
+
     return (
         <div style={{ fontFamily: "sans-serif", padding: "20px" }}>
             <h2>OBC Status</h2>
-            <button onClick={fetchStatus} disabled={isLoading}>
-                {isLoading ? "Loading..." : "Get OBC Status"}
-            </button>
+            <div>
+                <button onClick={fetchStatus} disabled={isLoading}>
+                    {isLoading ? "Loading..." : "Get OBC Status"}
+                </button>
+                <button
+                    onClick={fetchTick}
+                    disabled={isTickLoading}
+                    style={{ marginLeft: "10px" }}
+                >
+                    {isTickLoading ? "Loading..." : "Get Current Tick"}
+                </button>
+            </div>
 
             <div
                 style={{
@@ -68,6 +114,27 @@ const StatusPage = () => {
 
                 {!isLoading && !error && !status && (
                     <p>Click the button to fetch the OBC status.</p>
+                )}
+
+                <hr style={{ margin: "16px 0" }} />
+                <h3>Current Tick:</h3>
+                {isTickLoading && <p>Fetching tick from OBC...</p>}
+
+                {tickError && (
+                    <div style={{ color: "red" }}>
+                        <h4>Error:</h4>
+                        <pre>{tickError}</pre>
+                    </div>
+                )}
+
+                {tick && (
+                    <div style={{ color: "#333" }}>
+                        <pre style={{ whiteSpace: "pre-wrap" }}>{tick}</pre>
+                    </div>
+                )}
+
+                {!isTickLoading && !tickError && !tick && (
+                    <p>Click the button to fetch the current tick.</p>
                 )}
             </div>
         </div>

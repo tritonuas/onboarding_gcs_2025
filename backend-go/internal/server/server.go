@@ -30,6 +30,7 @@ func (s *Server) setupRouter() {
 	{
 		api.GET("/obc/status", s.getOBCStatus())
         api.GET("/obc/tick", s.getOBCTick())
+        api.GET("/obc/capture", s.getOBCCapture())
 	}
 
 	s.router = router
@@ -69,6 +70,24 @@ func (s *Server) getOBCTick() gin.HandlerFunc {
         if statusCode != http.StatusOK {
             log.Printf("Error from OBC client tick. Status: %d", statusCode)
             c.JSON(statusCode, gin.H{"error": "Failed to get tick from OBC."})
+            return
+        }
+
+        c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
+    }
+}
+
+
+// handler for /api/v1/obc/capture
+func (s *Server) getOBCCapture() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        log.Println("Handler invoked: Proxying capture request to OBC.")
+
+        body, statusCode := s.obcClient.GetCapture()
+
+        if statusCode != http.StatusOK {
+            log.Printf("Error from OBC client. Status: %d", statusCode)
+            c.JSON(statusCode, gin.H{"error": "Failed to get image from OBC."})
             return
         }
 

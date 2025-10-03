@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../CapturePage.css";
+import "./ImagePage.css";
 
 const ImageFetchPage = () => {
     const [imageB64, setImageB64] = useState<string | null>(null);

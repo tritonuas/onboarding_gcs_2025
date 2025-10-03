@@ -2,7 +2,7 @@ import { useState } from "react";
 import HomePage from "./pages/HomePage";
 import StatusPage from "./pages/StatusPage";
 import PlaygroundPage from "./pages/PlaygroundPage";
-import CapturePage from "./pages/CapturePage";
+import ImagePage from "./pages/ImagePage";
 import "./tabs.css";
 
 type TabKey = "home" | "status" | "playground" | "image";
@@ -14,7 +14,7 @@ function App() {
         if (activeTab === "home") return <HomePage />;
         if (activeTab === "status") return <StatusPage />;
         if (activeTab === "playground") return <PlaygroundPage />;
-        if (activeTab === "image") return <CapturePage />;
+        if (activeTab === "image") return <ImagePage />;
         return null;
     };
 

@@ -41,7 +41,8 @@ const StatusPage = () => {
         setTickError(null);
         setTick(null);
 
-        fetch("/api/v1/obc/tick")
+        const bust = Date.now();
+        fetch(`/api/v1/obc/tick?_=${bust}`, { cache: "no-store" })
             .then(async (response) => {
                 if (!response.ok) {
                     // try parse JSON error from proxy, else use status text

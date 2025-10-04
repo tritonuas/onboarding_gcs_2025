@@ -2,8 +2,34 @@ syntax = "proto3";
 
 option go_package = "gcs-onboarding/internal/protos";
 
+enum ODLCObjects {
+    Undefined = 0;
+    Mannequin = 1;
+    Car = 2;
+    Motorcycle = 3;
+    Airplane = 4; 
+    Bus = 5;
+    Boat = 6; 
+    Stopsign = 7;
+    Snowboard = 8;
+    Umbrella = 9;
+    SoccerBall = 10;
+    Basketball = 11; 
+    Volleyball = 12;
+    Football = 13;
+    Baseballbat = 14;
+    Mattress = 15;
+    Tennisracket = 16;
+    Suitcase = 17;
+    Skis = 18;
+}
+
 message OBCStatus {
   string current_tick_name = 1;
   bool is_connected = 2;
   double mission_progress_percent = 3;
+}
+
+message DetectedObject {
+    ODLCObjects object = 1;
 }

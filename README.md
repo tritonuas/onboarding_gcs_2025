@@ -1,6 +1,8 @@
 # TritonUAS GCS Onboarding
 
-TODO: Write this
+If you haven't already, make sure that you have read the onboarding project overview on the [wiki](https://tritonuas.com/wiki/software/onboarding/project/project_overview/), as well as 1.1 to 1.4 in [How to Contribute](https://tritonuas.com/wiki/software/how_to_contribute/).
+
+After you finish setting up the onboarding GCS on your machine, follow the onboarding tasks step by step on the wiki, starting with [OBC Intro](https://tritonuas.com/wiki/software/onboarding/project/tasks/1_obc_intro/)! We're not using GCS just quite yet.
 
 ## Setup
 

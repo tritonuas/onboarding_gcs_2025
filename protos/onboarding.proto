@@ -30,6 +30,4 @@ message OBCStatus {
   double mission_progress_percent = 3;
 }
 
-message DetectedObject {
-    ODLCObjects object = 1;
-}
+// TODO: Add your message here

@@ -29,7 +29,7 @@ Then, open the folder in VS Code.
     2. Select (or type) reopen in container.
     3. If successful, the bottom-left should say: `Dev Container: GCS Onboarding`.
 
-4. Login to GitHub within the Dev Container (Optional but recommended)
+4. Login to GitHub within the Dev Container (Optional)
 
     1. In the terminal of your dev container, enter `gh auth login`
     2. Then, answer the questions **exactly** as below with the exception of the passphrase and title of the ssh key, to which you can type in whatever you'd like, or just leave it as default:

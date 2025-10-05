@@ -1,8 +1,8 @@
 package obc
 
 import (
-	"bytes"
-	"encoding/json"
+	// "bytes"
+	// "encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -48,30 +48,31 @@ func (c *Client) GetStatus() ([]byte, int) {
 	return body, resp.StatusCode
 }
 
+// Uncomment below
 // PostMessage sends a message to the OBC's /message endpoint.
 // It returns the response body and the HTTP status code.
-func (c *Client) PostMessage(message interface{}) ([]byte, int) {
-    // Construct the full URL for the request
-    requestURL := fmt.Sprintf("%s/message", c.urlBase)
+// func (c *Client) PostMessage(message interface{}) ([]byte, int) {
+//     // Construct the full URL for the request
+//     requestURL := fmt.Sprintf("%s/message", c.urlBase)
 
-    // Convert message to JSON
-    var requestBody io.Reader
-    if message != nil {
-        jsonData, err := json.Marshal(message)
-        if err != nil {
-            log.Printf("Error marshaling message to JSON: %v", err)
-            return nil, http.StatusBadRequest
-        }
-        requestBody = bytes.NewBuffer(jsonData)
-    }
+//     // Convert message to JSON
+//     var requestBody io.Reader
+//     if message != nil {
+//         jsonData, err := json.Marshal(message)
+//         if err != nil {
+//             log.Printf("Error marshaling message to JSON: %v", err)
+//             return nil, http.StatusBadRequest
+//         }
+//         requestBody = bytes.NewBuffer(jsonData)
+//     }
 
-    // TODO: Perform the POST request
+//     // TODO: Perform the POST request
 
-    // TODO: Read the response body from the OBC
+//     // TODO: Read the response body from the OBC
 
-    // Return the body and the status code from the OBC's response
-    return body, resp.StatusCode
-}
+//     // Return the body and the status code from the OBC's response
+//     return body, resp.StatusCode
+// }
 
 // GetTick retrieves the current tick from the OBC's /tick endpoint.
 // It returns the response body and the HTTP status code.

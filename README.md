@@ -1,6 +1,8 @@
 # TritonUAS GCS Onboarding
 
-TODO: Write this
+If you haven't already, make sure that you have read the onboarding project overview on the [wiki](https://tritonuas.com/wiki/software/onboarding/project/project_overview/), as well as 1.1 to 1.4 in [How to Contribute](https://tritonuas.com/wiki/software/how_to_contribute/).
+
+After you finish setting up the onboarding GCS on your machine, follow the onboarding tasks step by step on the wiki, starting with [OBC Intro](https://tritonuas.com/wiki/software/onboarding/project/tasks/1_obc_intro/)! We're not using GCS just quite yet.
 
 ## Setup
 
@@ -11,14 +13,15 @@ TODO: Write this
 -   [Visual Studio Code](https://code.visualstudio.com/download)
     -   After VSC is downloaded, download this extension: [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-2. Clone the Repository and Open in Visual Studio Code.
+2. Clone the Repository
 
 ```bash
 # Navigate to directory where you want to start
 git clone git@github.com:tritonuas/onboarding_gcs_2025.git
-cd onboarding_gcs
-code .
+cd onboarding_gcs_2025
 ```
+
+Then, open the folder in VS Code.
 
 3. Pull the Dev Container:
 
@@ -26,7 +29,8 @@ code .
     2. Select (or type) reopen in container.
     3. If successful, the bottom-left should say: `Dev Container: GCS Onboarding`.
 
-4. Login to GitHub within the Dev Container
+4. Login to GitHub within the Dev Container (Optional)
+
     1. In the terminal of your dev container, enter `gh auth login`
     2. Then, answer the questions **exactly** as below with the exception of the passphrase and title of the ssh key, to which you can type in whatever you'd like, or just leave it as default:
     ```

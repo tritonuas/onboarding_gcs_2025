@@ -83,7 +83,7 @@ func (s *Server) postMessage() gin.HandlerFunc {
             return
         }
 
-		respBody, status := s.obcClient.PostMessage(&detectedObject)
+		// TODO: Your code goes here
 
         // Serialize the request object using protojson
         reqJSON, err := protojson.Marshal(&detectedObject)
@@ -131,22 +131,9 @@ func (s *Server) getOBCTick() gin.HandlerFunc {
 }
 
 
+// TODO: Implement this
 // handler for /api/v1/obc/capture
-func (s *Server) getOBCCapture() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        log.Println("Handler invoked: Proxying capture request to OBC.")
 
-        body, statusCode := s.obcClient.GetCapture()
-
-        if statusCode != http.StatusOK {
-            log.Printf("Error from OBC client. Status: %d", statusCode)
-            c.JSON(statusCode, gin.H{"error": "Failed to get image from OBC."})
-            return
-        }
-
-        c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
-    }
-}
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {

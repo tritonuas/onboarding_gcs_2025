@@ -2,10 +2,9 @@ import { useState } from "react";
 import HomePage from "./pages/HomePage";
 import StatusPage from "./pages/StatusPage";
 import PlaygroundPage from "./pages/PlaygroundPage";
-import ImagePage from "./pages/ImagePage";
 import "./tabs.css";
 
-type TabKey = "home" | "status" | "playground" | "image";
+type TabKey = "home" | "status" | "playground";
 
 function App() {
     const [activeTab, setActiveTab] = useState<TabKey>("home");
@@ -14,7 +13,6 @@ function App() {
         if (activeTab === "home") return <HomePage />;
         if (activeTab === "status") return <StatusPage />;
         if (activeTab === "playground") return <PlaygroundPage />;
-        if (activeTab === "image") return <ImagePage />;
         return null;
     };
 
@@ -58,18 +56,7 @@ function App() {
                 >
                     Playground
                 </button>
-                <button
-                    className={`tab-button${
-                        activeTab === "image" ? " active" : ""
-                    }`}
-                    role="tab"
-                    aria-selected={activeTab === "image"}
-                    onClick={() => setActiveTab("image")}
-                >
-                    Image Viewer
-                </button>
             </nav>
-
             <main className="tabs-main">{renderActivePage()}</main>
         </div>
     );

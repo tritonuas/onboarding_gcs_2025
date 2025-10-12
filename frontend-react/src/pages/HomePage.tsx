@@ -17,6 +17,9 @@ const HomePage = () => {
                         demo (text input + counter) you can copy to start your
                         own tab.
                     </li>
+                    <li>
+                        <strong>Capture</strong>: Capture image
+                    </li>
                 </ul>
             </div>
         </div>

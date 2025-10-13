@@ -36,6 +36,7 @@ func (s *Server) setupRouter() {
 	{
 		api.GET("/obc/status", s.getOBCStatus())
         api.GET("/obc/tick", s.getOBCTick())
+				api.GET("obc/capture", s.getOBCCapture())
 	}
 
 	s.router = router
@@ -132,6 +133,18 @@ func (s *Server) getOBCTick() gin.HandlerFunc {
 
 // TODO: Implement this
 // handler for /api/v1/obc/capture
+func (s *Server) getOBCCapture() gin.HandlerFunc {
+	return func (c *gin.Context) {
+		body, statusCode := s.obcClient.getOBCCapture();
+
+		if statusCode != http.StatusOK {
+			c.JSON(statusCode, gin.H{"error": "Failed to capture image from OBC."})
+			return
+		}
+
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
+	}
+}
 
 
 func CORSMiddleware() gin.HandlerFunc {

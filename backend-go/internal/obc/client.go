@@ -104,3 +104,24 @@ func (c *Client) GetTick() ([]byte, int) {
 // TODO: Implement this
 // GetCapture retrieves the stored image from the OBC's /capture endpoint.
 // It returns the response body and the HTTP status code.
+
+func (c *Client) GetCapture() ([]byte, int) { 
+	requestURL := fmt.Sprintf("%s/capture", c.urlBase);
+
+	resp, err := c.httpClient.Get(requestURL);
+
+	if err != nil {
+		log.Printf("FATAL: OBC client request failed with network error: %v", err)
+
+		return nil, http.StatusBadGateway
+	}
+	defer resp.Body.Close();
+
+	body, err := io.ReadAll(resp.Body);
+
+	if err != nil {
+		return nil, http.StatusInternalServerError
+	}
+
+	return body, resp.StatusCode
+}

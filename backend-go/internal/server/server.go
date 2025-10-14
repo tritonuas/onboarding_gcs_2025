@@ -135,7 +135,7 @@ func (s *Server) getOBCTick() gin.HandlerFunc {
 // handler for /api/v1/obc/capture
 func (s *Server) getOBCCapture() gin.HandlerFunc {
 	return func (c *gin.Context) {
-		body, statusCode := s.obcClient.getOBCCapture();
+		body, statusCode := s.obcClient.GetCapture();
 
 		if statusCode != http.StatusOK {
 			c.JSON(statusCode, gin.H{"error": "Failed to capture image from OBC."})

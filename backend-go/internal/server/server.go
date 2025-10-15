@@ -1,16 +1,16 @@
 package server
 
 import (
-    // "encoding/json"
-    // "io"
+    "encoding/json"
+    "io"
     "log"
     "net/http"
 
     "gcs-onboarding/internal/obc"
-    // "gcs-onboarding/internal/protos"
+    "gcs-onboarding/internal/protos"
 
     "github.com/gin-gonic/gin"
-    // "google.golang.org/protobuf/encoding/protojson"
+    "google.golang.org/protobuf/encoding/protojson"
 )
 
 // Server holds the dependencies for the HTTP server.
@@ -37,6 +37,7 @@ func (s *Server) setupRouter() {
 		api.GET("/obc/status", s.getOBCStatus())
         api.GET("/obc/tick", s.getOBCTick())
 				api.GET("obc/capture", s.getOBCCapture())
+				api.POST("obc/message", s.postMessage())
 	}
 
 	s.router = router
@@ -68,50 +69,52 @@ func (s *Server) getOBCStatus() gin.HandlerFunc {
 
 // Uncomment below
 // handler for /api/v1/obc/message
-// func (s *Server) postMessage() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-//         var detectedObject protos.DetectedObject
-//         body, readErr := io.ReadAll(c.Request.Body)
-//         if readErr != nil {
-//             c.JSON(http.StatusBadRequest, gin.H{"error": readErr.Error()})
-//             return
-//         }
+func (s *Server) postMessage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+        var detectedObject protos.DetectedObject
+        body, readErr := io.ReadAll(c.Request.Body)
+        if readErr != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": readErr.Error()})
+            return
+        }
 
-//         unmarshalOpts := protojson.UnmarshalOptions{DiscardUnknown: true}
-//         if err := unmarshalOpts.Unmarshal(body, &detectedObject); err != nil {
-//             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//             return
-//         }
+        unmarshalOpts := protojson.UnmarshalOptions{DiscardUnknown: true}
+        if err := unmarshalOpts.Unmarshal(body, &detectedObject); err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+            return
+        }
 
-// 		// TODO: Your code goes here
+		// TODO: Your code goes here
 
-//         // Serialize the request object using protojson
-//         reqJSON, err := protojson.Marshal(&detectedObject)
-//         if err != nil {
-//             // Fall back to plain error if serialization fails
-//             c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal request proto"})
-//             return
-//         }
+        // Serialize the request object using protojson
+        reqJSON, err := protojson.Marshal(&detectedObject)
+        if err != nil {
+            // Fall back to plain error if serialization fails
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal request proto"})
+            return
+        }
 
-//         // Try to decode upstream body as JSON, otherwise include as string
-//         var upstream interface{}
-//         if len(respBody) > 0 {
-//             var tmp interface{}
-//             if json.Unmarshal(respBody, &tmp) == nil {
-//                 upstream = tmp
-//             } else {
-//                 upstream = string(respBody)
-//             }
-//         }
+				respBody, status := s.obcClient.PostMessage(json.RawMessage(reqJSON))
 
-//         // Wrap in a JSON envelope
-//         c.JSON(status, gin.H{
-//             "request": json.RawMessage(reqJSON),
-//             "upstream_status": status,
-//             "upstream_body": upstream,
-//         })
-// 	}
-// }
+        // Try to decode upstream body as JSON, otherwise include as string
+        var upstream interface{}
+        if len(respBody) > 0 {
+            var tmp interface{}
+            if json.Unmarshal(respBody, &tmp) == nil {
+                upstream = tmp
+            } else {
+                upstream = string(respBody)
+            }
+        }
+
+        // Wrap in a JSON envelope
+        c.JSON(status, gin.H{
+            "request": json.RawMessage(reqJSON),
+            "upstream_status": status,
+            "upstream_body": upstream,
+        })
+	}
+}
 
 // handler for /api/v1/obc/tick
 func (s *Server) getOBCTick() gin.HandlerFunc {

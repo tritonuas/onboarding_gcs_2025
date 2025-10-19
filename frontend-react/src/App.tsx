@@ -3,8 +3,9 @@ import HomePage from "./pages/HomePage";
 import StatusPage from "./pages/StatusPage";
 import PlaygroundPage from "./pages/PlaygroundPage";
 import "./tabs.css";
+import CapturePage from "./pages/CapturePage";
 
-type TabKey = "home" | "status" | "playground";
+type TabKey = "home" | "status" | "playground" | "capture";
 
 function App() {
     const [activeTab, setActiveTab] = useState<TabKey>("home");
@@ -13,6 +14,7 @@ function App() {
         if (activeTab === "home") return <HomePage />;
         if (activeTab === "status") return <StatusPage />;
         if (activeTab === "playground") return <PlaygroundPage />;
+        if (activeTab === "capture") return <CapturePage />;
         return null;
     };
 
@@ -55,6 +57,16 @@ function App() {
                     onClick={() => setActiveTab("playground")}
                 >
                     Playground
+                </button>
+                <button
+                    className={`tab-button${
+                        activeTab === "capture" ? " active" : ""
+                    }`}
+                    role="tab"
+                    aria-selected={activeTab === "capture"}
+                    onClick={() => setActiveTab("capture")}
+                >
+                    Capture
                 </button>
             </nav>
             <main className="tabs-main">{renderActivePage()}</main>

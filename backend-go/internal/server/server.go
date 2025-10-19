@@ -1,16 +1,21 @@
 package server
 
 import (
-    // "encoding/json"
-    // "io"
-    "log"
-    "net/http"
+	// "encoding/json"
+	// "io"
+	"encoding/json"
+	"io"
+	"log"
+	"net/http"
 
-    "gcs-onboarding/internal/obc"
-    // "gcs-onboarding/internal/protos"
+	"gcs-onboarding/internal/obc"
+	"gcs-onboarding/internal/protos"
 
-    "github.com/gin-gonic/gin"
-    // "google.golang.org/protobuf/encoding/protojson"
+	// "gcs-onboarding/internal/protos"
+
+	"github.com/gin-gonic/gin"
+	"google.golang.org/protobuf/encoding/protojson"
+	// "google.golang.org/protobuf/encoding/protojson"
 )
 
 // Server holds the dependencies for the HTTP server.
@@ -30,12 +35,14 @@ func New(obcClient *obc.Client) *Server {
 func (s *Server) setupRouter() {
 	router := gin.Default()
 	router.Use(CORSMiddleware())
-    router.Use(NoCacheMiddleware())
+	router.Use(NoCacheMiddleware())
 
 	api := router.Group("/api/v1")
 	{
 		api.GET("/obc/status", s.getOBCStatus())
-        api.GET("/obc/tick", s.getOBCTick())
+		api.GET("/obc/tick", s.getOBCTick())
+		api.GET("/obc/capture", s.getOBCCapture())
+		api.POST("/obc/message", s.postMessage())
 	}
 
 	s.router = router
@@ -48,7 +55,7 @@ func (s *Server) Start(port string) {
 	}
 }
 
-// handler for /api/v1/obc/status 
+// handler for /api/v1/obc/status
 func (s *Server) getOBCStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		log.Println("Handler invoked: Proxying request to OBC.")
@@ -67,72 +74,83 @@ func (s *Server) getOBCStatus() gin.HandlerFunc {
 
 // Uncomment below
 // handler for /api/v1/obc/message
-// func (s *Server) postMessage() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-//         var detectedObject protos.DetectedObject
-//         body, readErr := io.ReadAll(c.Request.Body)
-//         if readErr != nil {
-//             c.JSON(http.StatusBadRequest, gin.H{"error": readErr.Error()})
-//             return
-//         }
+func (s *Server) postMessage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var detectedObject protos.DetectedObject
+		body, readErr := io.ReadAll(c.Request.Body)
+		if readErr != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": readErr.Error()})
+			return
+		}
 
-//         unmarshalOpts := protojson.UnmarshalOptions{DiscardUnknown: true}
-//         if err := unmarshalOpts.Unmarshal(body, &detectedObject); err != nil {
-//             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//             return
-//         }
+		unmarshalOpts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		if err := unmarshalOpts.Unmarshal(body, &detectedObject); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-// 		// TODO: Your code goes here
+		respBody, status := s.obcClient.PostMessage(&detectedObject)
 
-//         // Serialize the request object using protojson
-//         reqJSON, err := protojson.Marshal(&detectedObject)
-//         if err != nil {
-//             // Fall back to plain error if serialization fails
-//             c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal request proto"})
-//             return
-//         }
+		// Serialize the request object using protojson
+		reqJSON, err := protojson.Marshal(&detectedObject)
+		if err != nil {
+			// Fall back to plain error if serialization fails
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal request proto"})
+			return
+		}
 
-//         // Try to decode upstream body as JSON, otherwise include as string
-//         var upstream interface{}
-//         if len(respBody) > 0 {
-//             var tmp interface{}
-//             if json.Unmarshal(respBody, &tmp) == nil {
-//                 upstream = tmp
-//             } else {
-//                 upstream = string(respBody)
-//             }
-//         }
+		// Try to decode upstream body as JSON, otherwise include as string
+		var upstream interface{}
+		if len(respBody) > 0 {
+			var tmp interface{}
+			if json.Unmarshal(respBody, &tmp) == nil {
+				upstream = tmp
+			} else {
+				upstream = string(respBody)
+			}
+		}
 
-//         // Wrap in a JSON envelope
-//         c.JSON(status, gin.H{
-//             "request": json.RawMessage(reqJSON),
-//             "upstream_status": status,
-//             "upstream_body": upstream,
-//         })
-// 	}
-// }
+		// Wrap in a JSON envelope
+		c.JSON(status, gin.H{
+			"request":         json.RawMessage(reqJSON),
+			"upstream_status": status,
+			"upstream_body":   upstream,
+		})
+	}
+}
 
 // handler for /api/v1/obc/tick
 func (s *Server) getOBCTick() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        log.Println("Handler invoked: Proxying tick request to OBC.")
+	return func(c *gin.Context) {
+		log.Println("Handler invoked: Proxying tick request to OBC.")
 
-        body, statusCode := s.obcClient.GetTick()
+		body, statusCode := s.obcClient.GetTick()
 
-        if statusCode != http.StatusOK {
-            log.Printf("Error from OBC client tick. Status: %d", statusCode)
-            c.JSON(statusCode, gin.H{"error": "Failed to get tick from OBC."})
-            return
-        }
+		if statusCode != http.StatusOK {
+			log.Printf("Error from OBC client tick. Status: %d", statusCode)
+			c.JSON(statusCode, gin.H{"error": "Failed to get tick from OBC."})
+			return
+		}
 
-        c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
-    }
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
+	}
 }
 
+func (s *Server) getOBCCapture() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		log.Println("Handler invoked: Proxying capture request to OBC.")
 
-// TODO: Implement this
-// handler for /api/v1/obc/capture
+		body, statusCode := s.obcClient.GetCapture()
 
+		if statusCode != http.StatusOK {
+			log.Printf("Error from OBC client capture. Status: %d", statusCode)
+			c.JSON(statusCode, gin.H{"error": "Failed to get tick from OBC."})
+			return
+		}
+
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", body)
+	}
+}
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -149,12 +167,12 @@ func CORSMiddleware() gin.HandlerFunc {
 
 // NoCacheMiddleware sets HTTP headers to prevent caching of API responses
 func NoCacheMiddleware() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        // Disable caching for dynamic API responses
-        c.Writer.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
-        c.Writer.Header().Set("Pragma", "no-cache")
-        c.Writer.Header().Set("Expires", "0")
-        c.Writer.Header().Set("Surrogate-Control", "no-store")
-        c.Next()
-    }
+	return func(c *gin.Context) {
+		// Disable caching for dynamic API responses
+		c.Writer.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+		c.Writer.Header().Set("Pragma", "no-cache")
+		c.Writer.Header().Set("Expires", "0")
+		c.Writer.Header().Set("Surrogate-Control", "no-store")
+		c.Next()
+	}
 }

@@ -31,3 +31,6 @@ message OBCStatus {
 }
 
 // TODO: Add your message here
+message DetectedObject {
+  int32 object = 1;
+}

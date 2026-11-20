@@ -6,6 +6,7 @@
     "service": "gcs-dev",
 
     "workspaceFolder": "/workspaces",
+    
 
     "customizations": {
         "vscode": {
